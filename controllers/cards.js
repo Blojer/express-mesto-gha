@@ -66,6 +66,8 @@ function likeCard(req, res) {
       console.log(err);
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
+      } if (!req.params.cardId) {
+        res.status(404).send({ message: 'Передан несуществующий id карточки' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -83,6 +85,8 @@ function dislikeCard(req, res) {
       console.log(err);
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
+      } if (!req.params.cardId) {
+        res.status(404).send({ message: 'Передан несуществующий id карточки' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }

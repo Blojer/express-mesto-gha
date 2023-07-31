@@ -24,7 +24,9 @@ function getUser(req, res) {
     .catch((err) => {
       console.log(err);
       if (err.kind === 'ObjectId') {
-        res.status(404).send({ message: 'Пользователя с таким id не найдено' });
+        res.status(400).send({ message: 'Некорректный id' });
+      } if (!userId) {
+        res.status(400).send({ message: 'Пользователя с таким id не найдено' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -52,7 +54,7 @@ function updateUser(req, res) {
     runValidators: true, // данные будут валидированы перед изменением
     upsert: true, // если пользователь не найден, он будет создан
   })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.log(err);
       if (err.name === 'ValidationError') {
@@ -68,7 +70,7 @@ function updateUser(req, res) {
 function updateAvatar(req, res) {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { ...req.body, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.log(err);
       if (err.name === 'ValidationError') {
