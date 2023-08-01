@@ -48,8 +48,7 @@ function deleteCard(req, res) {
       res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
-      console.log(err);
-      if (!cardId) {
+      if (err.name === 'CastError') {
         res.status(404).send({ message: 'карточки с указанным id не найдено' });
       }
     });
@@ -61,13 +60,17 @@ function likeCard(req, res) {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-    .then(res.send({ message: 'Like' }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+        return;
+      }
+      res.send(card);
+    })
     .catch((err) => {
       console.log(err);
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
-      } if (!req.params.cardId) {
-        res.status(404).send({ message: 'Передан несуществующий id карточки' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -80,10 +83,16 @@ function dislikeCard(req, res) {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then(res.send({ message: 'Dislike' }))
+    .then((card) => {
+      if (!card) {
+        res.status(404).send({ message: 'Передан несуществующий id карточки' });
+        return;
+      }
+      res.send(card);
+    })
     .catch((err) => {
       console.log(err);
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
       } if (!req.params.cardId) {
         res.status(404).send({ message: 'Передан несуществующий id карточки' });
