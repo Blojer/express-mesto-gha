@@ -16,11 +16,10 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use('/', (_req, res) => {
-  res.status(404).send({ message: 'Неверный путь' });
-});
+
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
+app.use((_req, res) => res.status(404).send({ message: 'Неверный путь' }));
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
