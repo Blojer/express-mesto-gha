@@ -7,7 +7,7 @@ function getUsers(_req, res) {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
       }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
 
@@ -25,7 +25,7 @@ function getUser(req, res) {
       if (err.kind === 'ObjectId') {
         res.status(400).send({ message: 'Некорректный id' });
       }
-      res.status(500).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
 
@@ -38,7 +38,7 @@ function createUser(req, res) {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }
@@ -58,7 +58,7 @@ function updateUser(req, res) {
       } if (!req.user._id) {
         res.status(404).send({ message: 'Пользователя с таким id не найдено' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }
@@ -78,7 +78,7 @@ function updateAvatar(req, res) {
       } if (!req.user._id) {
         res.status(404).send({ message: 'Пользователя с таким id не найдено' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }

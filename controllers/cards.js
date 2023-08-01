@@ -15,7 +15,7 @@ function getCards(_req, res) {
           message: 'Передача некоректых данных', err,
         });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }
@@ -74,7 +74,7 @@ function likeCard(req, res) {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Передача некоректых данных' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }
@@ -99,7 +99,7 @@ function dislikeCard(req, res) {
       } if (!req.params.cardId) {
         res.status(404).send({ message: 'Передан несуществующий id карточки' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 }

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3000, DB_CONN = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use('/cards', cardsRoutes);
 app.use((_req, res) => res.status(404).send({ message: 'Неверный путь' }));
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  await mongoose.connect(DB_CONN, {
     useNewUrlParser: true,
   });
 
