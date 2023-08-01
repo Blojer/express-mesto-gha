@@ -16,6 +16,9 @@ app.use((req, res, next) => {
 
   next();
 });
+app.use('/', (_req, res) => {
+  res.status(404).send({ message: 'Неверный путь' });
+});
 app.use('/users', usersRoutes);
 app.use('/cards', cardsRoutes);
 
