@@ -43,13 +43,15 @@ function deleteCard(req, res) {
 
   Card.findById(cardId)
     .then((card) => {
-      console.log(card);
+      if (!card) {
+        res.status(404).send({ message: 'Карточки с таким id не найдено' });
+      }
       card.deleteOne();
       res.send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(404).send({ message: 'карточки с указанным id не найдено' });
+        res.status(400).send({ message: 'Некорректное id карточки' });
       }
     });
 }
