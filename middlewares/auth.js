@@ -19,7 +19,7 @@ function auth(req, res, next) {
   }
 
   req.user = payload; // записываем пейлоуд в объект запроса
-  next(); // пропускаем запрос дальше
+  return next(); // пропускаем запрос дальше
 }
 
 module.exports = auth;
