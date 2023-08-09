@@ -56,6 +56,7 @@ app.use((err, req, res, next) => {
         ? 'На сервере произошла ошибка'
         : message,
     });
+  next();
 });
 app.use((_req, res) => res.status(404).send({ message: 'Неверный путь' }));
 main();

@@ -11,10 +11,11 @@ function getUsers(_req, res, next) {
     .then((users) => res.status(200).send(users))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new BadRequestError('Передача некоректых данных'));
+        next(new BadRequestError('Передача некоректых данных'));
         // res.status(400).send({ message: 'Передача некоректых данных' });
+      } else {
+        next(err);
       }
-      next(err);
       // res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
@@ -32,10 +33,11 @@ function getUser(req, res, next) {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        return next(new BadRequestError('Некорректный id'));
+        next(new BadRequestError('Некорректный id'));
         // res.status(400).send({ message: 'Некорректный id' });
+      } else {
+        next(err);
       }
-      next(err);
       // res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
@@ -118,29 +120,15 @@ function updateAvatar(req, res, next) {
 function login(req, res, next) {
   const { email, password } = req.body;
 
-  User.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
+  return User.findUserByCredentials(email, password).then((user) => {
+    // создадим токен
+    const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
 
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-          // хеши не совпали — отклоняем промис
-            return Promise.reject(new Error('Неправильные почта или пароль'));
-          }
-          return user;
-        }).then((user) => {
-          // создадим токен
-          const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-
-          res.cookie('token', token, { maxAge: 3600000 * 24 * 7 });
-          // вернём токен
-          res.send({ token });
-        });
-    })
-    .catch((err) => { next(new UnauthorizedError('Некорректный токен')); });
+    res.cookie('token', token, { maxAge: 3600000 * 24 * 7 });
+    // вернём токен
+    res.send({ token });
+  })
+    .catch(next(new UnauthorizedError('Некорректный токен')));
 }
 
 module.exports = {
