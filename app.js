@@ -1,12 +1,15 @@
 /* eslint-disable import/no-extraneous-dependencies */
 const express = require('express');
 const mongoose = require('mongoose');
-const { celebrate, Joi, errors } = require('celebrate');
+const { errors } = require('celebrate');
 const cookieParser = require('cookie-parser');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
+const { validateSignUp, validateSignIn } = require('./middlewares/validation');
 const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/error-handler');
+const NotFoundError = require('./errors/not-found-err');
 
 const { PORT = 3000, DB_CONN = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
@@ -15,21 +18,8 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
-    email: Joi.string().regex(/.+@.+\..+/i).required(),
-    password: Joi.string().required().min(4),
-  }),
-}), createUser);
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().regex(/.+@.+\..+/i),
-    password: Joi.string().required().min(4),
-  }),
-}), login);
+app.post('/signup', validateSignUp, createUser);
+app.post('/signin', validateSignIn, login);
 
 app.use(auth);
 
@@ -46,17 +36,6 @@ async function main() {
   });
 }
 app.use(errors());
-app.use((err, req, res, next) => {
-  console.log(err);
-  const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
-  next();
-});
-app.use((_req, res) => res.status(404).send({ message: 'Неверный путь' }));
+app.use((_req, res, next) => { next(new NotFoundError('Неверный путь')); });
+app.use(errorHandler);
 main();

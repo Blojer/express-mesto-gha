@@ -11,11 +11,9 @@ function getUsers(_req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передача некоректых данных'));
-        // res.status(400).send({ message: 'Передача некоректых данных' });
       } else {
         next(err);
       }
-      // res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
 
@@ -32,17 +30,14 @@ function getUser(req, res, next) {
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         next(new BadRequestError('Некорректный id'));
-        // res.status(400).send({ message: 'Некорректный id' });
       } else {
         next(err);
       }
-      // res.status(500).send({ message: 'На сервере произошла ошибка' });
     });
 }
 
 function getUserInfo(req, res, next) {
   User.findById(req.user._id)
-    // .onFail(new NotFoundError('Пользователя с таким id не найдено'))
     .then((user) => res.send(user))
     .catch(next);
 }
@@ -65,13 +60,8 @@ function createUser(req, res, next) {
       console.log(err);
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передача некоректых данных'));
-        // res.status(400).send({ message: 'Передача некоректых данных' });
       } else if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже существует'));
-        // const err = new Error('Пользователь с таким email уже существует');
-        // err.statusCode = 409;
-
-        // next(err);
       } else {
         next(err);
       }
@@ -89,10 +79,8 @@ function updateUser(req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передача некоректых данных'));
-        // res.status(400).send({ message: 'Передача некоректых данных' });
       } if (!req.user._id) {
         next(new NotFoundError('Пользователя с таким id не найдено'));
-        // res.status(404).send({ message: 'Пользователя с таким id не найдено' });
       } else {
         next(err);
       }
@@ -110,10 +98,8 @@ function updateAvatar(req, res, next) {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Передача некоректых данных'));
-        // res.status(400).send({ message: 'Передача некоректых данных' });
       } if (!req.user._id) {
         next(new NotFoundError('Пользователя с таким id не найдено'));
-        // res.status(404).send({ message: 'Пользователя с таким id не найдено' });
       } else {
         next(err);
       }
@@ -127,7 +113,6 @@ function login(req, res, next) {
     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
 
     res.cookie('token', token);
-    // вернём токен
     return res.send({ token });
   })
     .catch(next);
