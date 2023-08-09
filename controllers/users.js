@@ -22,13 +22,12 @@ function getUsers(_req, res, next) {
 function getUser(req, res, next) {
   const { userId } = req.params;
   return User.findById(userId)
-    .onFail(new NotFoundError('Пользователя с таким id не найдено'))
     .then((user) => {
-      // if (!user) {
-      //   res.status(404).send({ message: 'Пользователя с таким id не найдено' });
-      //   return;
-      // }
-      res.status(200).send(user);
+      console.log(user);
+      if (!user) {
+        console.log(user);
+        throw new NotFoundError('Пользователя с таким id не найдено');
+      } else { res.status(200).send(user); }
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
@@ -43,7 +42,7 @@ function getUser(req, res, next) {
 
 function getUserInfo(req, res, next) {
   User.findById(req.user._id)
-    .onFail(new NotFoundError('Пользователя с таким id не найдено'))
+    // .onFail(new NotFoundError('Пользователя с таким id не найдено'))
     .then((user) => res.send(user))
     .catch(next);
 }
@@ -56,7 +55,12 @@ function createUser(req, res, next) {
   bcrypt.hash(password, 10).then((hash) => User.create({
     name, about, avatar, email, password: hash,
   }))
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({
+      name: user.name,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+    }))
     .catch((err) => {
       console.log(err);
       if (err.name === 'ValidationError') {
@@ -118,15 +122,13 @@ function updateAvatar(req, res, next) {
 
 function login(req, res, next) {
   const { email, password } = req.body;
-  console.log(req.body);
 
   return User.findUserByCredentials(email, password).then((user) => {
-    console.log(user);
     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
 
-    res.cookie('token', token, { maxAge: 3600000 * 24 * 7 });
+    res.cookie('token', token);
     // вернём токен
-    res.send({ token });
+    return res.send({ token });
   })
     .catch(next);
 }

@@ -48,9 +48,11 @@ function likeCard(req, res, next) {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
-  ).orFail(next(new NotFoundError('Передан несуществующий id карточки')))
+  )
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        throw new NotFoundError('Передан несуществующий id карточки');
+      } else { res.send(card); }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -66,9 +68,11 @@ function dislikeCard(req, res, next) {
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
-  ).orFail(next(new NotFoundError('Передан несуществующий id карточки')))
+  )
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        throw new NotFoundError('Передан несуществующий id карточки');
+      } else { res.send(card); }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
