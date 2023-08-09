@@ -6,27 +6,26 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       minlength: 2,
       maxlength: 30,
       default: 'Жак-Ив Кусто',
     },
     about: {
       type: String,
-      required: true,
       minlength: 2,
       maxlength: 30,
       default: 'Исследователь',
     },
     avatar: {
-      type: String,
-      required: true,
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+
+      type: String,
       validate: {
         validator(v) {
           return /^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i.test(v);
         },
       },
+
     },
     email: {
       type: String,
@@ -49,7 +48,7 @@ const userSchema = new mongoose.Schema(
   { versionKey: false },
 );
 
-userSchema.statics.findUserByCredentials = function findUser(email, password) {
+userSchema.statics.findUserByCredentials = function findUse(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {

@@ -17,11 +17,11 @@ app.use(cookieParser());
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().regex(/.+@.+\..+/i),
-    password: Joi.string().required().min(4),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().required().regex(/^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
+    avatar: Joi.string().regex(/^((http|https|ftp):\/\/)?(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
+    email: Joi.string().regex(/.+@.+\..+/i).required(),
+    password: Joi.string().required().min(4),
   }),
 }), createUser);
 app.post('/signin', celebrate({
