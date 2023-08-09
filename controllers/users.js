@@ -119,16 +119,17 @@ function updateAvatar(req, res, next) {
 
 function login(req, res, next) {
   const { email, password } = req.body;
+  console.log(req.body);
 
   return User.findUserByCredentials(email, password).then((user) => {
-    // создадим токен
+    console.log(user);
     const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
 
     res.cookie('token', token, { maxAge: 3600000 * 24 * 7 });
     // вернём токен
     res.send({ token });
   })
-    .catch(next(new UnauthorizedError('Некорректный токен')));
+    .catch(next);
 }
 
 module.exports = {
